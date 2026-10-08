@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeToComic AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #687386;
+    --primary: #6c5ce7;
+    --secondary: #00b894;
+    --danger: #e74c3c;
+    --warning: #f39c12;
+    --border: #e4e8f0;
+    --shadow: 0 10px 30px rgba(40, 50, 80, 0.08);
+}
+
+body.dark {
+    --bg: #0f1220;
+    --card: #181c2e;
+    --text: #f5f7ff;
+    --muted: #a9b0c5;
+    --border: #2b3148;
+    --shadow: 0 10px 30px rgba(0,0,0,.3);
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: .3s;
+}
+
+button,
+select,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 245px;
+    height: 100vh;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 22px 15px;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 21px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#6c5ce7,#00cec9);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.nav-title {
+    color: var(--muted);
+    font-size: 11px;
+    margin: 20px 10px 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 12px 13px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 5px 0;
+    text-align: left;
+    transition: .2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(108,92,231,.12);
+    color: var(--primary);
+}
+
+.nav-icon {
+    width: 22px;
+    text-align: center;
+}
+
+/* MAIN */
+
+.main {
+    margin-left: 245px;
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 72px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.top-title {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 10px;
+}
+
+.page {
+    display: none;
+    padding: 30px;
+}
+
+.page.active {
+    display: block;
+}
+
+/* COMMON */
+
+.hero {
+    background: linear-gradient(135deg,#6c5ce7,#4834d4,#00cec9);
+    color: white;
+    border-radius: 22px;
+    padding: 35px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.hero h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    max-width: 700px;
+    line-height: 1.6;
+    opacity: .92;
+}
+
+.btn {
+    border: 0;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-success {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-outline {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 18px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(108,92,231,.12);
+    font-size: 24px;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.section-title {
+    margin: 28px 0 15px;
+    font-size: 20px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+}
+
+/* CODE EDITOR */
+
+.editor-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+select,
+input {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 9px;
+    padding: 10px 13px;
+    outline: none;
+}
+
+textarea {
+    width: 100%;
+    min-height: 430px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: #10131f;
+    color: #e8ecff;
+    padding: 20px;
+    font-family: Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    outline: none;
+}
+
+.analysis-box {
+    margin-top: 20px;
+    display: none;
+}
+
+.analysis-box.show {
+    display: block;
+}
+
+.analysis-list {
+    list-style: none;
+    margin-top: 15px;
+}
+
+.analysis-list li {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.analysis-list li:last-child {
+    border-bottom: 0;
+}
+
+/* FLOW */
+
+.flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.flow-node {
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgba(108,92,231,.12);
+    border: 1px solid rgba(108,92,231,.25);
+    font-weight: bold;
+}
+
+.arrow {
+    color: var(--primary);
+    font-size: 20px;
+}
+
+/* COMIC */
+
+.comic-toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.comic-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+}
+
+.panel {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 300px;
+    transition: .2s;
+}
+
+.panel:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+}
+
+.panel-number {
+    background: var(--primary);
+    color: white;
+    padding: 9px 13px;
+    font-weight: bold;
+}
+
+.scene {
+    height: 140px;
+    display: grid;
+    place-items: center;
+    font-size: 65px;
+    background: linear-gradient(135deg,#eef0ff,#e5fffa);
+}
+
+body.dark .scene {
+    background: linear-gradient(135deg,#242942,#173c3b);
+}
+
+.panel-content {
+    padding: 15px;
+}
+
+.panel-content h3 {
+    margin-bottom: 7px;
+}
+
+.dialogue {
+    margin-top: 12px;
+    padding: 10px;
+    border-left: 4px solid var(--primary);
+    background: rgba(108,92,231,.08);
+    border-radius: 7px;
+}
+
+/* DEBUGGER */
+
+.debug-status {
+    padding: 18px;
+    border-radius: 13px;
+    background: rgba(231,76,60,.1);
+    border: 1px solid rgba(231,76,60,.3);
+    margin-bottom: 20px;
+}
+
+.debug-step {
+    padding: 17px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    margin-bottom: 12px;
+    background: var(--card);
+}
+
+.debug-step.correct {
+    border-left: 5px solid var(--secondary);
+}
+
+.debug-step.error {
+    border-left: 5px solid var(--danger);
+}
+
+/* QUIZ */
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.progress {
+    width: 100%;
+    height: 10px;
+    background: var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#6c5ce7,#00cec9);
+    transition: .3s;
+}
+
+.quiz-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.quiz-stat {
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.correct-stat {
+    background: rgba(0,184,148,.12);
+    color: var(--secondary);
+}
+
+.wrong-stat {
+    background: rgba(231,76,60,.12);
+    color: var(--danger);
+}
+
+.quiz-card {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.question-type {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: rgba(108,92,231,.12);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.question {
+    font-size: 22px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+.code-question {
+    background: #10131f;
+    color: #e8ecff;
+    border-radius: 12px;
+    padding: 18px;
+    font-family: Consolas, monospace;
+    white-space: pre-wrap;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+.option {
+    padding: 15px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 12px;
+    text-align: left;
+    transition: .2s;
+}
+
+.option:hover:not(:disabled) {
+    border-color: var(--primary);
+}
+
+.option.correct {
+    border-color: var(--secondary);
+    background: rgba(0,184,148,.1);
+}
+
+.option.wrong {
+    border-color: var(--danger);
+    background: rgba(231,76,60,.1);
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.answer-feedback {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    display: none;
+}
+
+.answer-feedback.show {
+    display: block;
+}
+
+.feedback-correct {
+    background: rgba(0,184,148,.1);
+    border: 1px solid rgba(0,184,148,.3);
+}
+
+.feedback-wrong {
+    background: rgba(231,76,60,.1);
+    border: 1px solid rgba(231,76,60,.3);
+}
+
+.quiz-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.score-result {
+    display: none;
+    text-align: center;
+    padding: 35px;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 20px auto;
+    display: grid;
+    place-items: center;
+    background: rgba(108,92,231,.12);
+    border: 8px solid var(--primary);
+    font-size: 32px;
+    font-weight: bold;
+}
+
+/* DASHBOARD */
+
+.recent-item {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+}
+
+.recent-item:last-child {
+    border-bottom: 0;
+}
+
+/* TOAST */
+
+.toast {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    padding: 14px 18px;
+    background: #202638;
+    color: white;
+    border-radius: 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: .3s;
+    z-index: 999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* PROFILE */
+
+.profile-grid {
+    max-width: 700px;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px) {
+    .cards {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .comic-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:750px) {
+    .sidebar {
+        width: 70px;
+        padding: 15px 8px;
+    }
+
+    .logo-text,
+    .nav-title,
+    .nav-item span:not(.nav-icon) {
+        display: none;
+    }
+
+    .logo {
+        justify-content: center;
+    }
+
+    .nav-item {
+        justify-content: center;
+    }
+
+    .main {
+        margin-left: 70px;
+    }
+
+    .page {
+        padding: 18px;
+    }
+
+    .grid-2,
+    .comic-grid,
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 25px;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">🤖</div>
+        <div class="logo-text">CodeTo<span>Comic</span></div>
+    </div>
+
+    <div class="nav-title">Workspace</div>
+
+    <button class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">🏠</span>
+        <span>Dashboard</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('editor',this)">
+        <span class="nav-icon">💻</span>
+        <span>Code Editor</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('analysis',this)">
+        <span class="nav-icon">🧠</span>
+        <span>AI Analysis</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('comic',this)">
+        <span class="nav-icon">🎨</span>
+        <span>Comic Studio</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('debugger',this)">
+        <span class="nav-icon">🐞</span>
+        <span>Debugger</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('quiz',this)">
+        <span class="nav-icon">📝</span>
+        <span>AI Quiz</span>
+    </button>
+
+    <div class="nav-title">Account</div>
+
+    <button class="nav-item" onclick="showPage('projects',this)">
+        <span class="nav-icon">📁</span>
+        <span>Projects</span>
+    </button>
+
+    <button class="nav-item" onclick="showPage('profile',this)">
+        <span class="nav-icon">👤</span>
+        <span>Profile</span>
+    </button>
+
+</aside>
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+    <div class="top-title" id="pageTitle">Dashboard</div>
+
+    <div class="top-actions">
+        <button class="icon-btn" onclick="toggleTheme()">🌙</button>
+        <button class="icon-btn" onclick="showToast('Welcome to CodeToComic AI!')">🔔</button>
+    </div>
+</header>
+
+<!-- DASHBOARD -->
+
+<section class="page active" id="dashboard">
+
+    <div class="hero">
+        <h1>Turn Source Code Into Stories 🚀</h1>
+        <p>
+            CodeToComic AI analyzes source code, understands execution flow,
+            converts logic into comic scenes and helps developers learn,
+            debug and visualize programs.
+        </p>
+
+        <br>
+
+        <button class="btn btn-primary" onclick="openEditor()">
+            Start Creating →
+        </button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card stat-card">
+            <div class="stat-icon">🎨</div>
+            <div>
+                <div class="stat-value" id="comicCount">6</div>
+                <div class="muted">Comics Created</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon">💻</div>
+            <div>
+                <div class="stat-value">5</div>
+                <div class="muted">Languages</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon">🧠</div>
+            <div>
+                <div class="stat-value">24</div>
+                <div class="muted">AI Analyses</div>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon">🏆</div>
+            <div>
+                <div class="stat-value" id="bestScore">90%</div>
+                <div class="muted">Best Quiz Score</div>
+            </div>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Recent Projects</h2>
+
+    <div class="card">
+
+        <div class="recent-item">
+            <div>
+                <b>Python Calculator</b>
+                <div class="muted">Python • Cartoon Style</div>
+            </div>
+            <span>🎨</span>
+        </div>
+
+        <div class="recent-item">
+            <div>
+                <b>Smart Loop Story</b>
+                <div class="muted">C • Manga Style</div>
+            </div>
+            <span>🎨</span>
+        </div>
+
+        <div class="recent-item">
+            <div>
+                <b>Java Student System</b>
+                <div class="muted">Java • Futuristic</div>
+            </div>
+            <span>🎨</span>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- EDITOR -->
+
+<section class="page" id="editor">
+
+    <h1>Code Editor</h1>
+    <p class="muted">
+        Enter your source code and let CodeToComic AI analyze it.
+    </p>
+
+    <br>
+
+    <div class="card">
+
+        <div class="editor-top">
+
+            <div class="controls">
+
+                <select id="language">
+                    <option value="python">Python</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+
+                <select id="difficulty">
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+
+            </div>
+
+            <div class="controls">
+
+                <button class="btn btn-outline" onclick="loadSample()">
+                    Sample Code
+                </button>
+
+                <button class="btn btn-success" onclick="analyzeCode()">
+                    🧠 Analyze Code
+                </button>
+
+            </div>
+
+        </div>
+
+        <textarea id="codeInput" placeholder="// Enter your source code here..."></textarea>
+
+    </div>
+
+</section>
+
+<!-- ANALYSIS -->
+
+<section class="page" id="analysis">
+
+    <h1>AI Code Analysis</h1>
+    <p class="muted">Logical understanding of your source code.</p>
+
+    <br>
+
+    <div class="grid-2">
+
+        <div class="card">
+            <h3>Detected Language</h3>
+            <br>
+            <h2 id="detectedLanguage">Python</h2>
+        </div>
+
+        <div class="card">
+            <h3>Complexity</h3>
+            <br>
+            <h2 id="complexity">O(n)</h2>
+        </div>
+
+    </div>
+
+    <div class="card analysis-box show" id="analysisBox">
+
+        <h2>Program Understanding</h2>
+
+        <ul class="analysis-list" id="analysisList">
+
+            <li>🔢 Variables detected</li>
+            <li>🔁 Loop structures detected</li>
+            <li>🔀 Conditional logic detected</li>
+            <li>📤 Output operation detected</li>
+
+        </ul>
+
+    </div>
+
+    <h2 class="section-title">Execution Flow</h2>
+
+    <div class="card">
+
+        <div class="flow" id="flow">
+
+            <div class="flow-node">📥 Input</div>
+            <div class="arrow">→</div>
+
+            <div class="flow-node">⚙️ Processing</div>
+            <div class="arrow">→</div>
+
+            <div class="flow-node">🔀 Decision</div>
+            <div class="arrow">→</div>
+
+            <div class="flow-node">🔁 Loop</div>
+            <div class="arrow">→</div>
+
+            <div class="flow-node">📤 Output</div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- COMIC -->
+
+<section class="page" id="comic">
+
+    <h1>Comic Studio</h1>
+
+    <p class="muted">
+        Transform your program logic into a visual story.
+    </p>
+
+    <br>
+
+    <div class="comic-toolbar">
+
+        <select id="comicStyle">
+            <option>Cartoon</option>
+            <option>Manga</option>
+            <option>Superhero</option>
+            <option>Minimalist</option>
+            <option>Futuristic</option>
+            <option>Pixel Art</option>
+            <option>Cyberpunk</option>
+        </select>
+
+        <button class="btn btn-primary" onclick="generateComic()">
+            ✨ Generate Comic
+        </button>
+
+        <button class="btn btn-success" onclick="speakComic()">
+            🔊 Voice
+        </button>
+
+        <button class="btn btn-outline" onclick="window.print()">
+            🖨 Print
+        </button>
+
+    </div>
+
+    <div class="comic-grid" id="comicGrid">
+
+        <div class="panel">
+            <div class="panel-number">Panel 1</div>
+            <div class="scene">👨‍💻</div>
+            <div class="panel-content">
+                <h3>The Programmer</h3>
+                <p>Our developer starts the program.</p>
+                <div class="dialogue">
+                    "Let's execute this code!"
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-number">Panel 2</div>
+            <div class="scene">📥</div>
+            <div class="panel-content">
+                <h3>Input Arrives</h3>
+                <p>The program receives input from the user.</p>
+                <div class="dialogue">
+                    "Input received!"
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-number">Panel 3</div>
+            <div class="scene">⚙️</div>
+            <div class="panel-content">
+                <h3>Processing</h3>
+                <p>Variables and operations process the data.</p>
+                <div class="dialogue">
+                    "Time to calculate!"
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-number">Panel 4</div>
+            <div class="scene">🔀</div>
+            <div class="panel-content">
+                <h3>Decision</h3>
+                <p>The condition determines what happens next.</p>
+                <div class="dialogue">
+                    "Condition checked!"
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-number">Panel 5</div>
+            <div class="scene">🔁</div>
+            <div class="panel-content">
+                <h3>Loop</h3>
+                <p>The program repeats an operation.</p>
+                <div class="dialogue">
+                    "Again! Again!"
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-number">Panel 6</div>
+            <div class="scene">🎉</div>
+            <div class="panel-content">
+                <h3>Final Output</h3>
+                <p>The program completes execution.</p>
+                <div class="dialogue">
+                    "Mission completed!"
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- DEBUGGER -->
+
+<section class="page" id="debugger">
+
+    <h1>🐞 Debugging Comic</h1>
+
+    <p class="muted">
+        Understand programming errors through a visual debugging story.
+    </p>
+
+    <br>
+
+    <div class="debug-status">
+        <h3>⚠️ Potential Logic Issue Detected</h3>
+        <br>
+        <p>
+            The program contains a condition or operation that should be
+            checked carefully.
+        </p>
+    </div>
+
+    <div id="debugSteps">
+
+        <div class="debug-step">
+            <b>Step 1 — Bug</b>
+            <p class="muted">Program reaches the problematic operation.</p>
+        </div>
+
+        <div class="debug-step">
+            <b>Step 2 — Why?</b>
+            <p class="muted">The value does not satisfy the expected condition.</p>
+        </div>
+
+        <div class="debug-step error">
+            <b>Step 3 — Error</b>
+            <p class="muted">Execution produces an unexpected result.</p>
+        </div>
+
+        <div class="debug-step">
+            <b>Step 4 — Correct</b>
+            <p class="muted">Update the logic or input validation.</p>
+        </div>
+
+        <div class="debug-step correct">
+            <b>Step 5 — Fixed</b>
+            <p class="muted">Program execution now follows the expected flow.</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- QUIZ -->
+
+<section class="page" id="quiz">
+
+    <h1>🧠 AI Code Challenge</h1>
+
+    <p class="muted">
+        Test your programming knowledge with advanced code-analysis questions.
+    </p>
+
+    <br>
+
+    <div class="card">
+
+        <div class="quiz-header">
+
+            <div>
+                <b id="questionNumber">Question 1 of 10</b>
+            </div>
+
+            <div class="quiz-stats">
+
+                <span class="quiz-stat correct-stat">
+                    ✓ Correct: <span id="correctCount">0</span>
+                </span>
+
+                <span class="quiz-stat wrong-stat">
+                    ✕ Wrong: <span id="wrongCount">0</span>
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+    </div>
+
+    <div class="card quiz-card" id="quizCard">
+
+        <span class="question-type" id="questionType">
+            Concept
+        </span>
+
+        <div class="question" id="questionText">
+            Loading question...
+        </div>
+
+        <div class="code-question" id="questionCode" style="display:none;"></div>
+
+        <div class="options" id="options"></div>
+
+        <div class="answer-feedback" id="feedback"></div>
+
+        <div class="quiz-actions">
+
+            <button
+                class="btn btn-outline"
+                id="previousBtn"
+                onclick="previousQuestion()">
+                ← Previous
+            </button>
+
+            <button
+                class="btn btn-primary"
+                id="nextBtn"
+                onclick="nextQuestion()">
+                Next →
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card score-result" id="scoreResult">
+
+        <h2>🎉 Quiz Completed!</h2>
+
+        <div class="score-circle">
+            <span id="finalScore">0%</span>
+        </div>
+
+        <h3 id="scoreMessage">Keep practicing!</h3>
+
+        <br>
+
+        <p class="muted" id="scoreDetails"></p>
+
+        <br>
+
+        <button class="btn btn-primary" onclick="restartQuiz()">
+            🔄 Try Again
+        </button>
+
+    </div>
+
+</section>
+
+<!-- PROJECTS -->
+
+<section class="page" id="projects">
+
+    <h1>📁 Saved Projects</h1>
+    <p class="muted">Manage your CodeToComic projects.</p>
+
+    <br>
+
+    <div class="grid-3">
+
+        <div class="card">
+            <h3>Python Calculator</h3>
+            <p class="muted">Python • Cartoon</p>
+            <br>
+            <button class="btn btn-outline" onclick="showToast('Project opened')">
+                Open
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>Loop Visualization</h3>
+            <p class="muted">C • Manga</p>
+            <br>
+            <button class="btn btn-outline" onclick="showToast('Project opened')">
+                Open
+            </button>
+        </div>
+
+        <div class="card">
+            <h3>Java System</h3>
+            <p class="muted">Java • Cyberpunk</p>
+            <br>
+            <button class="btn btn-outline" onclick="showToast('Project opened')">
+                Open
+            </button>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- PROFILE -->
+
+<section class="page" id="profile">
+
+    <h1>👤 Profile</h1>
+    <p class="muted">Your CodeToComic AI profile.</p>
+
+    <br>
+
+    <div class="card profile-grid">
+
+        <div class="profile-row">
+            <b>Name</b>
+            <span>Developer</span>
+        </div>
+
+        <div class="profile-row">
+            <b>Role</b>
+            <span>Software Developer</span>
+        </div>
+
+        <div class="profile-row">
+            <b>Projects</b>
+            <span>6</span>
+        </div>
+
+        <div class="profile-row">
+            <b>Favorite Language</b>
+            <span>Python</span>
+        </div>
+
+        <div class="profile-row">
+            <b>Favorite Style</b>
+            <span>Cyberpunk</span>
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+/* =========================
+   GLOBAL STATE
+========================= */
+
+let currentPage = "dashboard";
+
+let currentCode = "";
+
+let quizIndex = 0;
+
+let userAnswers = [];
+
+let quizStarted = false;
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showPage(pageId, element) {
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    if (element) {
+        element.classList.add("active");
+    }
+
+    currentPage = pageId;
+
+    const titles = {
+        dashboard: "Dashboard",
+        editor: "Code Editor",
+        analysis: "AI Analysis",
+        comic: "Comic Studio",
+        debugger: "Debugger",
+        quiz: "AI Quiz",
+        projects: "Saved Projects",
+        profile: "Profile"
+    };
+
+    document.getElementById("pageTitle").textContent =
+        titles[pageId] || "CodeToComic AI";
+
+    if (pageId === "quiz" && !quizStarted) {
+        startQuiz();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function openEditor() {
+
+    const button = document.querySelector(
+        '.nav-item[onclick*="editor"]'
+    );
+
+    showPage("editor", button);
+}
+
+
+/* =========================
+   THEME
+========================= */
+
+function toggleTheme() {
+
+    document.body.classList.toggle("dark");
+
+    const dark = document.body.classList.contains("dark");
+
+    localStorage.setItem("codeComicTheme", dark ? "dark" : "light");
+
+    showToast(dark ? "Dark mode enabled" : "Light mode enabled");
+}
+
+if (localStorage.getItem("codeComicTheme") === "dark") {
+    document.body.classList.add("dark");
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(message) {
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+
+
+/* =========================
+   SAMPLE CODE
+========================= */
+
+function loadSample() {
+
+    const language = document.getElementById("language").value;
+
+    let sample = "";
+
+    if (language === "python") {
+
+        sample =
+`name = input("Enter your name: ")
+
+for i in range(3):
+    if i % 2 == 0:
+        print("Hello", name)
+    else:
+        print("Loop:", i)
+
+print("Program completed")`;
+
+    }
+
+    else if (language === "c") {
+
+        sample =
+`#include <stdio.h>
+
+int main() {
+
+    int i;
+
+    for(i = 0; i < 5; i++) {
+
+        if(i % 2 == 0)
+            printf("Even\\n");
+        else
+            printf("Odd\\n");
+    }
+
+    return 0;
+}`;
+
+    }
+
+    else if (language === "cpp") {
+
+        sample =
+`#include <iostream>
+using namespace std;
+
+int main() {
+
+    for(int i = 1; i <= 5; i++) {
+
+        if(i % 2 == 0)
+            cout << "Even";
+        else
+            cout << "Odd";
+    }
+
+    return 0;
+}`;
+
+    }
+
+    else if (language === "java") {
+
+        sample =
+`public class Main {
+
+    public static void main(String[] args) {
+
+        for(int i = 1; i <= 5; i++) {
+
+            if(i % 2 == 0)
+                System.out.println("Even");
+            else
+                System.out.println("Odd");
+        }
+    }
+}`;
+
+    }
+
+    else {
+
+        sample =
+`let total = 0;
+
+for(let i = 1; i <= 5; i++) {
+
+    if(i % 2 === 0) {
+        total += i;
+    }
+}
+
+console.log(total);`;
+
+    }
+
+    document.getElementById("codeInput").value = sample;
+
+    showToast("Sample code loaded");
+}
+
+
+/* =========================
+   CODE ANALYSIS
+========================= */
+
+function analyzeCode() {
+
+    const code = document.getElementById("codeInput").value.trim();
+
+    if (!code) {
+        showToast("Please enter some code first");
+        return;
+    }
+
+    currentCode = code;
+
+    const language =
+        document.getElementById("language").value;
+
+    document.getElementById("detectedLanguage").textContent =
+        language.toUpperCase();
+
+    let complexity = "O(1)";
+
+    if (/for|while|foreach/.test(code)) {
+        complexity = "O(n)";
+    }
+
+    if (
+        /for[\s\S]*for/.test(code) ||
+        /while[\s\S]*while/.test(code)
+    ) {
+        complexity = "O(n²)";
+    }
+
+    document.getElementById("complexity").textContent =
+        complexity;
+
+    const list = document.getElementById("analysisList");
+
+    list.innerHTML = "";
+
+    const features = [];
+
+    if (/input|scanf|cin|prompt|read/i.test(code)) {
+        features.push("📥 User input operation detected");
+    }
+
+    if (/for|while|foreach/i.test(code)) {
+        features.push("🔁 Loop structure detected");
+    }
+
+    if (/if|else|switch|case/i.test(code)) {
+        features.push("🔀 Conditional decision detected");
+    }
+
+    if (/function|def |void |int main|public static void/i.test(code)) {
+        features.push("⚙️ Function / method detected");
+    }
+
+    if (/print|printf|cout|console\.log|println/i.test(code)) {
+        features.push("📤 Output operation detected");
+    }
+
+    if (/[+\-*\/%=]/.test(code)) {
+        features.push("➗ Arithmetic operation detected");
+    }
+
+    if (/class /i.test(code)) {
+        features.push("🏛 Class / object-oriented structure detected");
+    }
+
+    if (/array|\[.*\]/i.test(code)) {
+        features.push("📦 Array / collection structure detected");
+    }
+
+    if (features.length === 0) {
+        features.push("🔍 Basic program structure detected");
+    }
+
+    features.forEach(feature => {
+
+        const li = document.createElement("li");
+
+        li.textContent = feature;
+
+        list.appendChild(li);
+    });
+
+    buildFlow(code);
+
+    showPage(
+        "analysis",
+        document.querySelector('.nav-item[onclick*="analysis"]')
+    );
+
+    showToast("AI analysis completed");
+}
+
+
+/* =========================
+   EXECUTION FLOW
+========================= */
+
+function buildFlow(code) {
+
+    const flow = document.getElementById("flow");
+
+    let nodes = [];
+
+    if (/input|scanf|cin|prompt|read/i.test(code)) {
+        nodes.push("📥 Input");
+    }
+
+    nodes.push("⚙️ Processing");
+
+    if (/if|else|switch|case/i.test(code)) {
+        nodes.push("🔀 Decision");
+    }
+
+    if (/for|while|foreach/i.test(code)) {
+        nodes.push("🔁 Loop");
+    }
+
+    if (/function|def |void |int main|public static void/i.test(code)) {
+        nodes.push("⚙️ Function");
+    }
+
+    if (/print|printf|cout|console\.log|println/i.test(code)) {
+        nodes.push("📤 Output");
+    }
+
+    flow.innerHTML = "";
+
+    nodes.forEach((node,index) => {
+
+        const div = document.createElement("div");
+
+        div.className = "flow-node";
+
+        div.textContent = node;
+
+        flow.appendChild(div);
+
+        if (index < nodes.length - 1) {
+
+            const arrow = document.createElement("div");
+
+            arrow.className = "arrow";
+
+            arrow.textContent = "→";
+
+            flow.appendChild(arrow);
+        }
+    });
+}
+
+
+/* =========================
+   COMIC GENERATOR
+========================= */
+
+function generateComic() {
+
+    const style =
+        document.getElementById("comicStyle").value;
+
+    const code =
+        document.getElementById("codeInput").value;
+
+    if (!code.trim()) {
+
+        showToast("Enter code before generating comic");
+
+        return;
+    }
+
+    const hasLoop = /for|while|foreach/i.test(code);
+
+    const hasCondition = /if|else|switch|case/i.test(code);
+
+    const hasInput = /input|scanf|cin|prompt|read/i.test(code);
+
+    const hasOutput = /print|printf|cout|console\.log|println/i.test(code);
+
+    const scenes = [
+
+        {
+            icon:"👨‍💻",
+            title:"Code Mission",
+            text:`A developer starts the ${style} code adventure.`,
+            dialogue:"Let's execute this program!"
+        },
+
+        {
+            icon:hasInput ? "📥" : "💡",
+            title:hasInput ? "Input Received" : "Program Starts",
+            text:hasInput
+                ? "The program receives data from the user."
+                : "The program begins execution.",
+            dialogue:hasInput
+                ? "Data received!"
+                : "Let's begin!"
+        },
+
+        {
+            icon:"⚙️",
+            title:"Processing",
+            text:"Variables and operations process the information.",
+            dialogue:"Processing the data..."
+        },
+
+        {
+            icon:hasCondition ? "🔀" : "🧩",
+            title:hasCondition ? "Decision Point" : "Logic",
+            text:hasCondition
+                ? "The program checks a condition and chooses a path."
+                : "The program follows its logical operations.",
+            dialogue:hasCondition
+                ? "Which path should I take?"
+                : "Logic activated!"
+        },
+
+        {
+            icon:hasLoop ? "🔁" : "🚀",
+            title:hasLoop ? "Loop Adventure" : "Execution",
+            text:hasLoop
+                ? "The program repeats the required operation."
+                : "Execution continues toward the result.",
+            dialogue:hasLoop
+                ? "Round again!"
+                : "Almost finished!"
+        },
+
+        {
+            icon:hasOutput ? "🎉" : "🏁",
+            title:"Final Result",
+            text:hasOutput
+                ? "The program produces the final output."
+                : "The program completes execution.",
+            dialogue:"Mission completed!"
+        }
+
+    ];
+
+    const grid = document.getElementById("comicGrid");
+
+    grid.innerHTML = "";
+
+    scenes.forEach((scene,index) => {
+
+        const panel = document.createElement("div");
+
+        panel.className = "panel";
+
+        panel.innerHTML = `
+            <div class="panel-number">
+                Panel ${index + 1}
+            </div>
+
+            <div class="scene">
+                ${scene.icon}
+            </div>
+
+            <div class="panel-content">
+
+                <h3>${scene.title}</h3>
+
+                <p>${scene.text}</p>
+
+                <div class="dialogue">
+                    "${scene.dialogue}"
+                </div>
+
+            </div>
+        `;
+
+        grid.appendChild(panel);
+    });
+
+    showToast(`${style} comic generated successfully`);
+
+    const count =
+        Number(localStorage.getItem("comicCount") || 6) + 1;
+
+    localStorage.setItem("comicCount",count);
+
+    document.getElementById("comicCount").textContent = count;
+}
+
+
+/* =========================
+   VOICE
+========================= */
+
+function speakComic() {
+
+    if (!("speechSynthesis" in window)) {
+
+        showToast("Voice is not supported by this browser");
+
+        return;
+    }
+
+    const panels =
+        document.querySelectorAll(".panel-content");
+
+    let text = "";
+
+    panels.forEach(panel => {
+
+        text += panel.innerText + ". ";
+    });
+
+    speechSynthesis.cancel();
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+    speech.rate = .9;
+
+    speech.pitch = 1;
+
+    speechSynthesis.speak(speech);
+
+    showToast("Comic narration started");
+}
+
+
+/* =========================
+   ADVANCED QUIZ DATA
+========================= */
+
+const quizQuestions = [
+
+    {
+        type:"Output Prediction",
+        question:"What is the output of this program?",
+        code:
+`x = 5
+x = x + 3
+print(x)`,
+        options:["5","8","3","Error"],
+        answer:1,
+        explanation:"x starts at 5 and 3 is added, so the final value is 8."
+    },
+
+    {
+        type:"Loop Analysis",
+        question:"How many times will the loop execute?",
+        code:
+`for i in range(5):
+    print(i)`,
+        options:["4","5","6","Infinite"],
+        answer:1,
+        explanation:"range(5) generates 0, 1, 2, 3 and 4. Therefore it executes 5 times."
+    },
+
+    {
+        type:"Condition",
+        question:"What will be printed?",
+        code:
+`x = 10
+
+if x > 5:
+    print("A")
+else:
+    print("B")`,
+        options:["A","B","A B","Nothing"],
+        answer:0,
+        explanation:"10 is greater than 5, so the if block executes."
+    },
+
+    {
+        type:"Variable Tracking",
+        question:"What is the final value of x?",
+        code:
+`x = 2
+x = x * 3
+x = x + 4`,
+        options:["6","8","10","12"],
+        answer:2,
+        explanation:"2 × 3 = 6, then 6 + 4 = 10."
+    },
+
+    {
+        type:"Code Tracing",
+        question:"What is the final value of total?",
+        code:
+`total = 0
+
+for i in range(1, 4):
+    total += i`,
+        options:["3","5","6","10"],
+        answer:2,
+        explanation:"The loop adds 1 + 2 + 3, giving a total of 6."
+    },
+
+    {
+        type:"Complexity",
+        question:"What is the approximate time complexity?",
+        code:
+`for i in range(n):
+    print(i)`,
+        options:["O(1)","O(log n)","O(n)","O(n²)"],
+        answer:2,
+        explanation:"The loop runs n times, so the complexity is O(n)."
+    },
+
+    {
+        type:"Advanced Complexity",
+        question:"What is the complexity of two nested loops?",
+        code:
+`for i in range(n):
+    for j in range(n):
+        print(i, j)`,
+        options:["O(1)","O(n)","O(log n)","O(n²)"],
+        answer:3,
+        explanation:"Each of the n outer iterations performs n inner iterations, giving n × n = n²."
+    },
+
+    {
+        type:"Debugging",
+        question:"What is the main problem with this code?",
+        code:
+`x = 10
+print(y)`,
+        options:[
+            "x is too large",
+            "y was never defined",
+            "print is invalid",
+            "There is no problem"
+        ],
+        answer:1,
+        explanation:"The program tries to access y even though y has not been defined."
+    },
+
+    {
+        type:"Execution Flow",
+        question:"Which part normally executes when an if condition is false?",
+        code:
+`if condition:
+    statement1
+else:
+    statement2`,
+        options:[
+            "statement1",
+            "Both statements",
+            "statement2",
+            "Neither"
+        ],
+        answer:2,
+        explanation:"When the condition is false, the else block executes."
+    },
+
+    {
+        type:"Advanced",
+        question:"What does a function primarily help with?",
+        code:
+`def add(a, b):
+    return a + b`,
+        options:[
+            "Repeating and organizing reusable logic",
+            "Deleting variables",
+            "Stopping every loop",
+            "Changing the programming language"
+        ],
+        answer:0,
+        explanation:"Functions package reusable logic so it can be called whenever needed."
+    }
+
+];
+
+
+/* =========================
+   QUIZ START
+========================= */
+
+function startQuiz() {
+
+    quizStarted = true;
+
+    quizIndex = 0;
+
+    userAnswers =
+        new Array(quizQuestions.length).fill(null);
+
+    document.getElementById("quizCard").style.display = "block";
+
+    document.getElementById("scoreResult").style.display = "none";
+
+    renderQuestion();
+}
+
+
+/* =========================
+   RENDER QUIZ
+========================= */
+
+function renderQuestion() {
+
+    const q = quizQuestions[quizIndex];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+
+    document.getElementById("questionType").textContent =
+        q.type;
+
+    document.getElementById("questionText").textContent =
+        q.question;
+
+    const codeBox =
+        document.getElementById("questionCode");
+
+    if (q.code) {
+
+        codeBox.style.display = "block";
+
+        codeBox.textContent = q.code;
+
+    } else {
+
+        codeBox.style.display = "none";
+    }
+
+    const options =
+        document.getElementById("options");
+
+    options.innerHTML = "";
+
+    q.options.forEach((option,index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "option";
+
+        button.textContent =
+            `${String.fromCharCode(65 + index)}. ${option}`;
+
+        button.onclick =
+            () => selectAnswer(index);
+
+        options.appendChild(button);
+
+    });
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.className = "answer-feedback";
+
+    feedback.innerHTML = "";
+
+    const existing =
+        userAnswers[quizIndex];
+
+    if (existing !== null) {
+
+        showAnswer(existing,false);
+    }
+
+    updateQuizStats();
+
+    const percentage =
+        ((quizIndex + 1) / quizQuestions.length) * 100;
+
+    document.getElementById("progressBar").style.width =
+        percentage + "%";
+
+    document.getElementById("previousBtn").disabled =
+        quizIndex === 0;
+
+    document.getElementById("nextBtn").textContent =
+        quizIndex === quizQuestions.length - 1
+            ? "Finish Quiz"
+            : "Next →";
+}
+
+
+/* =========================
+   SELECT ANSWER
+========================= */
+
+function selectAnswer(index) {
+
+    if (userAnswers[quizIndex] !== null) {
+        return;
+    }
+
+    userAnswers[quizIndex] = index;
+
+    showAnswer(index,true);
+
+    updateQuizStats();
+}
+
+
+/* =========================
+   SHOW ANSWER
+========================= */
+
+function showAnswer(selected,scroll) {
+
+    const q = quizQuestions[quizIndex];
+
+    const optionButtons =
+        document.querySelectorAll(".option");
+
+    optionButtons.forEach((button,index) => {
+
+        button.disabled = true;
+
+        if (index === q.answer) {
+            button.classList.add("correct");
+        }
+
+        if (
+            index === selected &&
+            selected !== q.answer
+        ) {
+            button.classList.add("wrong");
+        }
+
+    });
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.className = "answer-feedback show";
+
+    if (selected === q.answer) {
+
+        feedback.classList.add("feedback-correct");
+
+        feedback.innerHTML =
+            `✅ <b>Correct!</b><br><br>${q.explanation}`;
+
+    } else {
+
+        feedback.classList.add("feedback-wrong");
+
+        feedback.innerHTML =
+            `❌ <b>Wrong Answer!</b><br><br>
+             Correct answer:
+             <b>${q.options[q.answer]}</b>
+             <br><br>
+             ${q.explanation}`;
+
+    }
+
+    if (scroll) {
+
+        feedback.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest"
+        });
+    }
+}
+
+
+/* =========================
+   QUIZ STATS
+========================= */
+
+function updateQuizStats() {
+
+    let correct = 0;
+
+    let wrong = 0;
+
+    userAnswers.forEach((answer,index) => {
+
+        if (answer === null) return;
+
+        if (answer === quizQuestions[index].answer) {
+            correct++;
+        } else {
+            wrong++;
+        }
+
+    });
+
+    document.getElementById("correctCount").textContent =
+        correct;
+
+    document.getElementById("wrongCount").textContent =
+        wrong;
+}
+
+
+/* =========================
+   NEXT QUESTION
+========================= */
+
+function nextQuestion() {
+
+    if (userAnswers[quizIndex] === null) {
+
+        showToast("Please answer the question first");
+
+        return;
+    }
+
+    if (quizIndex < quizQuestions.length - 1) {
+
+        quizIndex++;
+
+        renderQuestion();
+
+    } else {
+
+        finishQuiz();
+    }
+}
+
+
+/* =========================
+   PREVIOUS
+========================= */
+
+function previousQuestion() {
+
+    if (quizIndex > 0) {
+
+        quizIndex--;
+
+        renderQuestion();
+    }
+}
+
+
+/* =========================
+   FINISH QUIZ
+========================= */
+
+function finishQuiz() {
+
+    let correct = 0;
+
+    userAnswers.forEach((answer,index) => {
+
+        if (
+            answer !== null &&
+            answer === quizQuestions[index].answer
+        ) {
+            correct++;
+        }
+
+    });
+
+    /*
+       IMPORTANT:
+       Percentage is calculated only from
+       the actual correct answers.
+
+       Wrong answers can NEVER produce 100%.
+    */
+
+    const percentage =
+        Math.round(
+            (correct / quizQuestions.length) * 100
+        );
+
+    document.getElementById("quizCard").style.display =
+        "none";
+
+    document.getElementById("scoreResult").style.display =
+        "block";
+
+    document.getElementById("finalScore").textContent =
+        percentage + "%";
+
+    document.getElementById("scoreDetails").textContent =
+        `${correct} correct out of ${quizQuestions.length} questions.`;
+
+    let message = "";
+
+    if (percentage === 100) {
+
+        message = "🏆 Perfect Score! Excellent coding knowledge.";
+
+    } else if (percentage >= 80) {
+
+        message = "🔥 Excellent! You have strong programming skills.";
+
+    } else if (percentage >= 60) {
+
+        message = "👍 Good job! Keep practicing advanced concepts.";
+
+    } else if (percentage >= 40) {
+
+        message = "📚 Nice attempt! More practice will help.";
+
+    } else {
+
+        message = "💪 Keep learning. You can improve!";
+    }
+
+    document.getElementById("scoreMessage").textContent =
+        message;
+
+    const oldBest =
+        Number(localStorage.getItem("bestScore") || 0);
+
+    if (percentage > oldBest) {
+
+        localStorage.setItem("bestScore",percentage);
+
+        document.getElementById("bestScore").textContent =
+            percentage + "%";
+    }
+
+    showToast(`Quiz completed: ${percentage}%`);
+}
+
+
+/* =========================
+   RESTART QUIZ
+========================= */
+
+function restartQuiz() {
+
+    quizIndex = 0;
+
+    userAnswers =
+        new Array(quizQuestions.length).fill(null);
+
+    document.getElementById("quizCard").style.display =
+        "block";
+
+    document.getElementById("scoreResult").style.display =
+        "none";
+
+    renderQuestion();
+}
+
+
+/* =========================
+   LOAD SAVED BEST SCORE
+========================= */
+
+const savedBest =
+    localStorage.getItem("bestScore");
+
+if (savedBest) {
+
+    document.getElementById("bestScore").textContent =
+        savedBest + "%";
+}
+
+
+/* =========================
+   KEYBOARD SHORTCUTS
+========================= */
+
+document.addEventListener("keydown", function(event) {
+
+    if (currentPage !== "quiz") return;
+
+    if (
+        event.key >= "1" &&
+        event.key <= "4"
+    ) {
+
+        const index =
+            Number(event.key) - 1;
+
+        const buttons =
+            document.querySelectorAll(".option");
+
+        if (buttons[index]) {
+            buttons[index].click();
+        }
+    }
+
+    if (event.key === "ArrowRight") {
+        nextQuestion();
+    }
+
+    if (event.key === "ArrowLeft") {
+        previousQuestion();
+    }
+
+});
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+document.getElementById("codeInput").value =
+`name = input("Enter your name: ")
+
+for i in range(3):
+    if i % 2 == 0:
+        print("Hello", name)
+    else:
+        print("Loop:", i)
+
+print("Program completed")`;
+
+</script>
+
+</body>
+</html>
