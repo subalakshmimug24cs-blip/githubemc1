@@ -1,1 +1,1070 @@
-creates test1.txt file
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOVA CALC - Smart Calculator</title>
+
+<style>
+
+@font-face {
+    font-family: "Svetze";
+    src: url("https://assets.fontdiff.com/webfonts/svetze-extra-bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: #f4f4f4;
+    color: #111;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: 0.3s;
+}
+
+body.dark {
+    background: #181818;
+    color: #fff;
+}
+
+/* ================= HEADER ================= */
+
+header {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.logo {
+    font-family: "Svetze", Georgia, serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
+}
+
+header h1 {
+    font-family: "Svetze", Georgia, serif;
+    font-size: 29px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-family: "Svetze", Georgia, serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #777;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin: 20px 0 12px;
+}
+
+.controls button {
+    background: white;
+    color: #111;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 7px 11px;
+    font-size: 8px;
+    cursor: pointer;
+}
+
+body.dark .controls button {
+    background: #292929;
+    color: white;
+    border-color: #444;
+}
+
+.controls button:hover {
+    background: #ddd;
+}
+
+.controls button.active {
+    background: #222;
+    color: white;
+}
+
+body.dark .controls button.active {
+    background: white;
+    color: #111;
+}
+
+/* ================= MAIN ================= */
+
+.container {
+    width: 680px;
+    max-width: 95%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+/* ================= CALCULATOR ================= */
+
+.calculator {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+}
+
+body.dark .calculator {
+    background: #242424;
+    border-color: #444;
+}
+
+/* ================= DISPLAY ================= */
+
+.display {
+    height: 88px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 9px;
+    padding: 8px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+body.dark .display {
+    background: #181818;
+    border-color: #444;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 5px 10px;
+    background: white;
+    color: #111;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 9px;
+}
+
+body.dark .copy-btn {
+    background: #292929;
+    color: white;
+    border-color: #444;
+}
+
+.expression {
+    text-align: right;
+    color: #777;
+    font-size: 10px;
+    height: 24px;
+    padding-top: 2px;
+}
+
+.result {
+    text-align: right;
+    font-size: 28px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* ================= SCIENTIFIC ================= */
+
+.scientific {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 7px;
+}
+
+.scientific.show {
+    display: grid;
+}
+
+.scientific button {
+    height: 35px;
+    background: #e7e7e7;
+    color: #111;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+body.dark .scientific button {
+    background: #353535;
+    color: white;
+    border-color: #4a4a4a;
+}
+
+.scientific button:hover {
+    background: #d2d2d2;
+}
+
+body.dark .scientific button:hover {
+    background: #484848;
+}
+
+/* ================= BASIC KEYPAD ================= */
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.buttons button {
+    height: 39px;
+    background: #e7e7e7;
+    color: #111;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+body.dark .buttons button {
+    background: #353535;
+    color: white;
+    border-color: #4a4a4a;
+}
+
+.buttons button:hover {
+    background: #d2d2d2;
+}
+
+body.dark .buttons button:hover {
+    background: #484848;
+}
+
+.buttons button:active,
+.scientific button:active {
+    transform: scale(0.96);
+}
+
+/* EQUALS */
+
+.buttons .equals {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
+body.dark .buttons .equals {
+    background: white;
+    color: #111;
+    border-color: white;
+}
+
+/* ZERO */
+
+.buttons .zero {
+    grid-column: span 2;
+}
+
+/* ================= HISTORY ================= */
+
+.history {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    min-height: 170px;
+    max-height: 380px;
+    padding: 12px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+    overflow-y: auto;
+}
+
+body.dark .history {
+    background: #242424;
+    border-color: #444;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.history-header h2 {
+    font-size: 11px;
+}
+
+.clear-history {
+    background: transparent;
+    border: none;
+    color: #777;
+    font-size: 8px;
+    cursor: pointer;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    font-size: 9px;
+    line-height: 2;
+}
+
+.history-item {
+    padding: 8px 3px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+body.dark .history-item {
+    border-color: #444;
+}
+
+.history-expression {
+    color: #777;
+    font-size: 9px;
+    margin-bottom: 3px;
+}
+
+.history-result {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* ================= FOOTER ================= */
+
+.keyboard-help {
+    text-align: center;
+    color: #777;
+    font-size: 8px;
+    margin-top: 18px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 95%;
+        grid-template-columns: 1fr;
+    }
+
+    .history {
+        min-height: 150px;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .logo {
+        font-size: 11px;
+    }
+
+    .subtitle {
+        font-size: 10px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">NOVA CALC</div>
+
+    <h1>Smart Calculator</h1>
+
+    <div class="subtitle">
+        Simple. Fast. Powerful.
+    </div>
+
+</header>
+
+
+<div class="controls">
+
+    <button id="basicBtn" class="active">
+        Basic
+    </button>
+
+    <button id="scientificBtn">
+        Scientific
+    </button>
+
+    <button id="darkBtn">
+        Dark Mode
+    </button>
+
+</div>
+
+
+<main class="container">
+
+<!-- ================= CALCULATOR ================= -->
+
+<section class="calculator">
+
+    <!-- DISPLAY -->
+
+    <div class="display">
+
+        <button class="copy-btn" onclick="copyResult()">
+            Copy
+        </button>
+
+        <div class="expression" id="expression"></div>
+
+        <div class="result" id="result">
+            0
+        </div>
+
+    </div>
+
+
+    <!-- ================= SCIENTIFIC BUTTONS ================= -->
+
+    <div class="scientific" id="scientificPanel">
+
+        <button onclick="scientificCalculate('sin')">
+            sin
+        </button>
+
+        <button onclick="scientificCalculate('cos')">
+            cos
+        </button>
+
+        <button onclick="scientificCalculate('tan')">
+            tan
+        </button>
+
+        <button onclick="scientificCalculate('sqrt')">
+            √
+        </button>
+
+        <button onclick="scientificCalculate('square')">
+            x²
+        </button>
+
+        <button onclick="powerMode()">
+            xʸ
+        </button>
+
+        <button onclick="scientificCalculate('log')">
+            log
+        </button>
+
+        <button onclick="scientificCalculate('ln')">
+            ln
+        </button>
+
+        <button onclick="insertConstant('pi')">
+            π
+        </button>
+
+        <button onclick="insertConstant('e')">
+            e
+        </button>
+
+        <button onclick="scientificCalculate('inverse')">
+            1/x
+        </button>
+
+        <button onclick="scientificCalculate('factorial')">
+            x!
+        </button>
+
+    </div>
+
+
+    <!-- ================= BASIC BUTTONS ================= -->
+
+    <div class="buttons">
+
+        <!-- ROW 1 -->
+
+        <button onclick="clearAll()">
+            AC
+        </button>
+
+        <button onclick="backspace()">
+            ⌫
+        </button>
+
+        <button onclick="inputValue('%')">
+            %
+        </button>
+
+        <button onclick="inputValue('/')">
+            ÷
+        </button>
+
+
+        <!-- ROW 2 -->
+
+        <button onclick="inputValue('7')">
+            7
+        </button>
+
+        <button onclick="inputValue('8')">
+            8
+        </button>
+
+        <button onclick="inputValue('9')">
+            9
+        </button>
+
+        <button onclick="inputValue('*')">
+            ×
+        </button>
+
+
+        <!-- ROW 3 -->
+
+        <button onclick="inputValue('4')">
+            4
+        </button>
+
+        <button onclick="inputValue('5')">
+            5
+        </button>
+
+        <button onclick="inputValue('6')">
+            6
+        </button>
+
+        <button onclick="inputValue('-')">
+            −
+        </button>
+
+
+        <!-- ROW 4 -->
+
+        <button onclick="inputValue('1')">
+            1
+        </button>
+
+        <button onclick="inputValue('2')">
+            2
+        </button>
+
+        <button onclick="inputValue('3')">
+            3
+        </button>
+
+        <button onclick="inputValue('+')">
+            +
+        </button>
+
+
+        <!-- ROW 5 -->
+
+        <button class="zero" onclick="inputValue('0')">
+            0
+        </button>
+
+        <button onclick="inputValue('.')">
+            .
+        </button>
+
+        <button class="equals" onclick="calculate()">
+            =
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= HISTORY ================= -->
+
+<section class="history">
+
+    <div class="history-header">
+
+        <h2>History</h2>
+
+        <button class="clear-history" onclick="clearHistory()">
+            Clear All
+        </button>
+
+    </div>
+
+    <div id="historyContent">
+
+        <div class="empty">
+            No calculations yet.<br>
+            Your calculations will appear here.
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* ================= VARIABLES ================= */
+
+let currentInput = "";
+let expressionText = "";
+let history = [];
+let powerWaiting = false;
+
+
+/* ================= ELEMENTS ================= */
+
+const resultDisplay =
+    document.getElementById("result");
+
+const expressionDisplay =
+    document.getElementById("expression");
+
+const historyContent =
+    document.getElementById("historyContent");
+
+const scientificPanel =
+    document.getElementById("scientificPanel");
+
+const basicBtn =
+    document.getElementById("basicBtn");
+
+const scientificBtn =
+    document.getElementById("scientificBtn");
+
+const darkBtn =
+    document.getElementById("darkBtn");
+
+
+/* ================= BASIC MODE ================= */
+
+basicBtn.addEventListener("click", () => {
+
+    scientificPanel.classList.remove("show");
+
+    basicBtn.classList.add("active");
+
+    scientificBtn.classList.remove("active");
+
+});
+
+
+/* ================= SCIENTIFIC MODE ================= */
+
+scientificBtn.addEventListener("click", () => {
+
+    scientificPanel.classList.add("show");
+
+    scientificBtn.classList.add("active");
+
+    basicBtn.classList.remove("active");
+
+});
+
+
+/* ================= DARK MODE ================= */
+
+darkBtn.addEventListener("click", () => {
+
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+
+        darkBtn.textContent = "Light Mode";
+
+    } else {
+
+        darkBtn.textContent = "Dark Mode";
+
+    }
+
+});
+
+
+/* ================= INPUT ================= */
+
+function inputValue(value) {
+
+    /*
+       If power mode is active,
+       convert xʸ into ^.
+    */
+
+    currentInput += value;
+
+    updateDisplay();
+}
+
+
+/* ================= UPDATE DISPLAY ================= */
+
+function updateDisplay() {
+
+    expressionDisplay.textContent =
+        expressionText;
+
+    if (currentInput === "") {
+
+        resultDisplay.textContent = "0";
+
+        return;
+    }
+
+    resultDisplay.textContent =
+        currentInput
+        .replace(/\*/g, "×")
+        .replace(/\//g, "÷")
+        .replace(/-/g, "−")
+        .replace(/\^/g, "ʸ");
+
+}
+
+
+/* ================= CLEAR ================= */
+
+function clearAll() {
+
+    currentInput = "";
+
+    expressionText = "";
+
+    powerWaiting = false;
+
+    updateDisplay();
+
+}
+
+
+/* ================= BACKSPACE ================= */
+
+function backspace() {
+
+    currentInput =
+        currentInput.slice(0, -1);
+
+    updateDisplay();
+
+}
+
+
+/* ================= BASIC CALCULATE ================= */
+
+function calculate() {
+
+    if (currentInput.trim() === "") {
+        return;
+    }
+
+    try {
+
+        let originalExpression =
+            currentInput;
+
+        let safeExpression =
+            currentInput
+            .replace(/×/g, "*")
+            .replace(/÷/g, "/")
+            .replace(/−/g, "-")
+            .replace(/\^/g, "**");
+
+        let result =
+            Function(
+                '"use strict"; return (' +
+                safeExpression +
+                ')'
+            )();
+
+        if (!Number.isFinite(result)) {
+            throw new Error("Invalid");
+        }
+
+        result =
+            formatNumber(result);
+
+        expressionText =
+            originalExpression
+            .replace(/\*/g, "×")
+            .replace(/\//g, "÷")
+            .replace(/-/g, "−")
+            .replace(/\^/g, "ʸ")
+            + " =";
+
+        currentInput =
+            String(result);
+
+        resultDisplay.textContent =
+            result;
+
+        addHistory(
+            originalExpression,
+            result
+        );
+
+        powerWaiting = false;
+
+    }
+
+    catch (error) {
+
+        showError();
+
+    }
+
+}
+
+
+/* ================= SCIENTIFIC CALCULATOR ================= */
+
+function scientificCalculate(type) {
+
+    let value =
+        getCurrentNumber();
+
+    if (value === null) {
+        return;
+    }
+
+    try {
+
+        let result;
+
+        switch (type) {
+
+            case "sin":
+
+                result =
+                    Math.sin(
+                        value * Math.PI / 180
+                    );
+
+                expressionText =
+                    "sin(" + value + ")";
+
+                break;
+
+
+            case "cos":
+
+                result =
+                    Math.cos(
+                        value * Math.PI / 180
+                    );
+
+                expressionText =
+                    "cos(" + value + ")";
+
+                break;
+
+
+            case "tan":
+
+                result =
+                    Math.tan(
+                        value * Math.PI / 180
+                    );
+
+                expressionText =
+                    "tan(" + value + ")";
+
+                break;
+
+
+            case "sqrt":
+
+                if (value < 0) {
+                    throw new Error();
+                }
+
+                result =
+                    Math.sqrt(value);
+
+                expressionText =
+                    "√(" + value + ")";
+
+                break;
+
+
+            case "square":
+
+                result =
+                    Math.pow(value, 2);
+
+                expressionText =
+                    value + "²";
+
+                break;
+
+
+            case "log":
+
+                if (value <= 0) {
+                    throw new Error();
+                }
+
+                result =
+                    Math.log10(value);
+
+                expressionText =
+                    "log(" + value + ")";
+
+                break;
+
+
+            case "ln":
+
+                if (value <= 0) {
+                    throw new Error();
+                }
+
+                result =
+                    Math.log(value);
+
+                expressionText =
+                    "ln(" + value + ")";
+
+                break;
+
+
+            case "inverse":
+
+                if (value === 0) {
+                    throw new Error();
+                }
+
+                result =
+                    1 / value;
+
+                expressionText =
+                    "1/" + value;
+
+                break;
+
+
+            case "factorial":
+
+                result =
+                    factorial(value);
+
+                expressionText =
+                    value + "!";
+
+                break;
+
+        }
+
+        result =
+            formatNumber(result);
+
+        currentInput =
+            String(result);
+
+        resultDisplay.textContent =
+            result;
+
+        addHistory(
+            expressionText,
+            result
+        );
+
+    }
+
+    catch (error) {
+
+        showError();
+
+    }
+
+}
+
+
+/* ================= POWER ================= */
+
+function powerMode() {
+
+    if (currentInput === "") {
+        return;
+    }
+
+    currentInput += "^";
+
+    expressionText =
+        currentInput
+        .replace(/\^/g, "ʸ");
+
+    powerWaiting = true;
+
+    updateDisplay();
+
+}
+
+
+/* ================= CONSTANTS ================= */
+
+function insertConstant(type) {
+
+    if (type === "pi") {
+
+        currentInput +=
+            Math.PI.toString();
+
+    }
+
+    else if (type === "e") {
+
+        currentInput +=
+            Math.E.toString();
+
+    }
+
+    updateDisplay();
+
+}
+
+
+/* ================= GET CURRENT NUMBER ================= */
+
+function getCurrentNumber() {
+
+    if (currentInput === "") {
+
+        let displayValue =
+            parseFloat(
+                resultDisplay.textContent
+            );
+
+        if (Number.isNaN(displayValue)) {
+            return null;
+        }
+
+        return displayValue;
+    }
+
+    /*
+       Scientific functions work on
+       the last calculated number.
+    */
+
+    if (
+        currentInput.includes("+") ||
+        currentInput.includes("-") ||
+        currentInput.includes("*") ||
+        currentInput.includes("/") ||
+        currentInput.includes("^")
+    ) {
+
+        return null
